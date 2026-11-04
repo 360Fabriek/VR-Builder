@@ -375,6 +375,13 @@ namespace VRBuilder.Core.Editor.UI.GraphView
                 return;
             }
 
+            if (clipboardProcess?.Data.FirstChapter?.Data.Steps.Count == 0 || clipboardProcess?.Data.FirstChapter == null)
+            {
+                return;
+            }
+
+            // Each paste needs fresh identities, even when the clipboard has not changed.
+            clipboardProcess = EditorConfigurator.Instance.EntityCloner.Clone(clipboardProcess);
             IChapter storedChapter = currentChapter;
             Vector2 pasteOrigin = new Vector2
                 (
@@ -382,9 +389,26 @@ namespace VRBuilder.Core.Editor.UI.GraphView
                     clipboardProcess.Data.FirstChapter.Data.Steps.Select(step => step.StepMetadata.Position).Min(position => position.y)
                 );
 
+#if ENABLE_INPUT_SYSTEM
+            Vector2 pasteOffset = UnityEngine.InputSystem.Mouse.current != null
+                ? (Vector2)contentViewContainer.WorldToLocal(UnityEngine.InputSystem.Mouse.current.position.ReadValue() / EditorGUIUtility.pixelsPerPoint) - pasteOrigin
+                : new Vector2(20, 20);
+#else
+            Vector2 pasteOffset = new Vector2(20, 20);
+#endif
+            foreach (IStep step in clipboardProcess.Data.FirstChapter.Data.Steps)
+            {
+                step.StepMetadata.Position += pasteOffset;
+            }
+
             RevertableChangesHandler.Do(new ProcessCommand(
             () =>
             {
+                if (currentChapter != storedChapter)
+                {
+                    SetChapter(storedChapter);
+                }
+
                 ClearSelection();
 
                 foreach (IStep step in clipboardProcess.Data.FirstChapter.Data.Steps)
@@ -394,11 +418,6 @@ namespace VRBuilder.Core.Editor.UI.GraphView
                         transition.Data.TargetStepReference.Set((IStep)null);
                     }
 
-#if ENABLE_INPUT_SYSTEM
-                    step.StepMetadata.Position += contentViewContainer.WorldToLocal(UnityEngine.InputSystem.Mouse.current.position.ReadValue() / EditorGUIUtility.pixelsPerPoint) - pasteOrigin;
-#else
-                    step.StepMetadata.Position += new Vector2(20, 20);
-#endif
                     currentChapter.Data.Steps.Add(step);
                 }
 

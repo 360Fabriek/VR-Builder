@@ -1,5 +1,7 @@
 using System.Linq;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
+using VRBuilder.Core.Editor.ProcessValidation;
 using UnityEngine;
 using UnityEngine.UIElements;
 using VRBuilder.Core.Editor.UndoRedo;
@@ -30,6 +32,25 @@ namespace VRBuilder.Core.Editor.UI.GraphView.Nodes
         {
             title = step.Data.Name;
             this.step = step;
+
+            Image referenceWarning = new Image
+            {
+                image = EditorGUIUtility.IconContent("console.warnicon.sml").image,
+                pickingMode = PickingMode.Position
+            };
+            referenceWarning.style.width = 16;
+            referenceWarning.style.height = 16;
+            referenceWarning.style.alignSelf = Align.Center;
+            referenceWarning.style.marginLeft = 6;
+            referenceWarning.style.marginRight = 4;
+            referenceWarning.style.display = DisplayStyle.None;
+            titleContainer.Insert(0, referenceWarning);
+            referenceWarning.schedule.Execute(() =>
+            {
+                string warningTooltip = MissingReferenceWarnings.GetTooltip(step, GlobalEditorHandler.GetCurrentProcess());
+                referenceWarning.tooltip = warningTooltip;
+                referenceWarning.style.display = string.IsNullOrEmpty(warningTooltip) ? DisplayStyle.None : DisplayStyle.Flex;
+            }).Every(500);
 
             Port inputPort = CreatePort(Direction.Input, Port.Capacity.Multi);
             inputPort.portName = "";

@@ -642,7 +642,7 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Windows
         }
         private static Texture2D LoadIcon(string fileStem)
         {
-            const string packageDir = "Packages/co.mindport.vrbuilder.core/Source/Core/StaticAssets/Icons/";
+            const string packageDir = "Packages/nl.360fabriek.vrbuilder.core/Source/Core/StaticAssets/Icons/";
             // Used when the package is mounted via file: protocol or relocated under Assets/.
             const string fallbackDir = "Assets/MindPort/VR Builder/Core/Source/Core/StaticAssets/Icons/";
             return AssetDatabase.LoadAssetAtPath<Texture2D>(packageDir + fileStem + ".png")

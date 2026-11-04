@@ -11,6 +11,7 @@ using VRBuilder.Core.Editor.Configuration;
 using VRBuilder.Core.Editor.ProcessValidation;
 using VRBuilder.Core.Editor.UndoRedo;
 using VRBuilder.Core.Entities.Factories;
+using VRBuilder.Core.Utils;
 
 namespace VRBuilder.Core.Editor.UI.Windows
 {
@@ -118,6 +119,7 @@ namespace VRBuilder.Core.Editor.UI.Windows
         private ChangeNamePopup changeNamePopup;
         private RenameProcessPopup renameProcessPopup;
         private bool showConnectionBreakdown = false;
+        private IProcessChapterMenuExtension[] chapterMenuExtensions;
 
         /// <summary>
         /// Initialises the windows with the correct process and ProcessWindow (parent).
@@ -187,6 +189,15 @@ namespace VRBuilder.Core.Editor.UI.Windows
                             DrawHeader();
                             DrawChapterList();
                             AddChapterButton();
+                            if (chapterMenuExtensions == null)
+                            {
+                                chapterMenuExtensions = ReflectionUtils.GetConcreteImplementationsOf<IProcessChapterMenuExtension>()
+                                    .Select(type => (IProcessChapterMenuExtension)ReflectionUtils.CreateInstanceOfType(type)).ToArray();
+                            }
+                            foreach (IProcessChapterMenuExtension extension in chapterMenuExtensions)
+                            {
+                                extension.Draw(Process, CurrentChapter);
+                            }
                         }
                     }
                     GUILayout.EndScrollView();
@@ -289,12 +300,22 @@ namespace VRBuilder.Core.Editor.UI.Windows
         private void DrawChapterContent(int position)
         {
             bool isActiveChapter = (activeChapter == position);
+            string warningTooltip = MissingReferenceWarnings.GetTooltip(Process.Data.Chapters[position], Process);
+            bool hasWarnings = string.IsNullOrEmpty(warningTooltip) == false;
             GUILayout.BeginHorizontal();
             {
                 GUILayout.Space(TabSpace);
                 if (isActiveChapter)
                 {
                     GUILayout.Space(ChapterPaddingTop);
+                }
+
+                if (hasWarnings)
+                {
+                    GUIStyle warningStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.LowerCenter };
+                    GUILayout.Label(new GUIContent(EditorGUIUtility.IconContent("console.warnicon.sml").image,
+                        warningTooltip), warningStyle,
+                        GUILayout.Width(16), GUILayout.Height(ButtonSize));
                 }
 
                 EditorColorUtils.SetTransparency(isActiveChapter ? 0.8f : 0.25f);
@@ -315,7 +336,7 @@ namespace VRBuilder.Core.Editor.UI.Windows
 
                 GUIStyle style = new GUIStyle(GUI.skin.label);
                 style.alignment = TextAnchor.UpperLeft;
-                GUILayout.Label(Process.Data.Chapters[position].Data.Name, style, GUILayout.Width(160f), GUILayout.Height(20f));
+                GUILayout.Label(Process.Data.Chapters[position].Data.Name, style, GUILayout.Width(hasWarnings ? 120f : 140f), GUILayout.Height(20f));
                 Rect labelPosition = GUILayoutUtility.GetLastRect();
 
                 GUILayout.FlexibleSpace();
@@ -323,6 +344,14 @@ namespace VRBuilder.Core.Editor.UI.Windows
                 AddMoveDownButton(position);
                 AddRemoveButton(position, Process.Data.Chapters.Count == 1);
                 AddRenameButton(position, labelPosition);
+                using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
+                {
+                    GUIContent exportContent = new GUIContent(EditorGUIUtility.IconContent("SaveAs").image, "Export Chapter Template");
+                    if (GUILayout.Button(exportContent, EditorStyles.label, GUILayout.Width(ButtonSize), GUILayout.Height(ButtonSize)))
+                    {
+                        ProcessChapterTemplateMenuExtension.Export(Process.Data.Chapters[position]);
+                    }
+                }
 
                 GUILayout.Space(4);
             }
@@ -490,7 +519,7 @@ namespace VRBuilder.Core.Editor.UI.Windows
             GUILayout.BeginHorizontal();
             {
                 GUILayout.FlexibleSpace();
-                if (GUILayout.Button("Add Chapter", GUILayout.Width(128), GUILayout.Height(32)))
+                if (GUILayout.Button("Add Chapter", GUILayout.Height(32)))
                 {
                     RevertableChangesHandler.Do(new ProcessCommand(
                         // ReSharper disable once ImplicitlyCapturedClosure
@@ -509,7 +538,7 @@ namespace VRBuilder.Core.Editor.UI.Windows
                 }
 
                 EditorGUI.BeginDisabledGroup(CurrentChapter == null);
-                if (GUILayout.Button("Duplicate Chapter", GUILayout.Width(128), GUILayout.Height(32)))
+                if (GUILayout.Button("Duplicate Chapter", GUILayout.Height(32)))
                 {
                     int addedChapter = activeChapter + 1;
 
@@ -531,6 +560,14 @@ namespace VRBuilder.Core.Editor.UI.Windows
                     ));
                 }
                 EditorGUI.EndDisabledGroup();
+
+                using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
+                {
+                    if (GUILayout.Button(new GUIContent("Import Chapter", "Add a chapter from a trusted template file."), GUILayout.Height(32)))
+                    {
+                        ProcessChapterTemplateMenuExtension.Import(Process, CurrentChapter);
+                    }
+                }
 
                 GUILayout.FlexibleSpace();
             }

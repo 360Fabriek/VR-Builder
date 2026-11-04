@@ -63,7 +63,7 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Drawers.BehaviorDrawers
         private VisualElement BuildComponentTypeField(SetComponentEnabledBehavior.EntityData data, Action<object> changeCallback)
         {
             List<string> options = BuildComponentOptions(data);
-            string current = ResolveCurrentSelection(data, options, changeCallback);
+            string current = ResolveCurrentSelection(data, options);
 
             DropdownField field = new DropdownField("Component type", options, current)
             {
@@ -154,8 +154,7 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Drawers.BehaviorDrawers
 
         private static string ResolveCurrentSelection(
             SetComponentEnabledBehavior.EntityData data,
-            List<string> options,
-            Action<object> changeCallback)
+            List<string> options)
         {
             if (string.IsNullOrEmpty(data.ComponentType))
             {
@@ -167,13 +166,9 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Drawers.BehaviorDrawers
                 return data.ComponentType;
             }
 
-            // The previously selected component is no longer present on any referenced object —
-            // clear the stored value so the popup and the persisted data agree.
-            string stale = data.ComponentType;
-            data.ComponentType = string.Empty;
-            changeCallback(data);
-            UnityEngine.Debug.LogWarning($"Component '{stale}' is no longer available on the referenced objects — selection cleared.");
-            return NoComponentSelected;
+            // Referenced objects may be in an unloaded scene; drawing must not clear their configuration.
+            options.Add(data.ComponentType);
+            return data.ComponentType;
         }
 
         private static bool CanBeDisabled(Component component)

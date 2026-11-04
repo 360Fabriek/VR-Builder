@@ -10,6 +10,12 @@ using VRBuilder.Core.Editor.XRUtils;
 
 namespace VRBuilder.Core.Editor.Settings
 {
+    public enum ProcessAssetStorage
+    {
+        SingleFile = 0,
+        SplitChapters = 1
+    }
+
     /// <summary>
     /// Settings for a VR Builder Unity project.
     /// </summary>
@@ -26,6 +32,12 @@ namespace VRBuilder.Core.Editor.Settings
         /// </summary>
         [HideInInspector]
         public string ProjectBuilderVersion = null;
+
+        /// <summary>
+        /// Storage strategy used by the default editor configuration when saving processes.
+        /// </summary>
+        [HideInInspector, SerializeField]
+        public ProcessAssetStorage ProcessStorage = ProcessAssetStorage.SingleFile;
 
         [HideInInspector, SerializeField]
         public List<string> OpenXRControllerProfiles = new List<string>();

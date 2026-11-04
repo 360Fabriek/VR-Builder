@@ -229,6 +229,11 @@ namespace VRBuilder.Core.Editor.ProcessAssets
         /// <param name="processName">The name of the process to load or <seealso cref="string.Empty"/> if the scene dos not contain a process.</param>
         public static IProcess Load(string processName)
         {
+            return Load(processName, true);
+        }
+
+        internal static IProcess Load(string processName, bool watchForChanges)
+        {
             if (ProcessAssetUtils.DoesProcessAssetExist(processName))
             {
                 string manifestPath = $"{ProcessAssetUtils.GetProcessAssetDirectory(processName)}/{BaseRuntimeConfiguration.ManifestFileName}.{EditorConfigurator.Instance.Serializer.FileFormat}";
@@ -240,8 +245,11 @@ namespace VRBuilder.Core.Editor.ProcessAssets
                 string processAssetPath = ProcessAssetUtils.GetProcessAssetPath(processName);
                 byte[] processData = File.ReadAllBytes(processAssetPath);
 
-                savedFileHashes = GetFileHashes(ProcessAssetUtils.GetProcessAssetDirectory(processName));
-                SetupWatcher(processName);
+                if (watchForChanges)
+                {
+                    savedFileHashes = GetFileHashes(ProcessAssetUtils.GetProcessAssetDirectory(processName));
+                    SetupWatcher(processName);
+                }
 
                 try
                 {
@@ -253,7 +261,7 @@ namespace VRBuilder.Core.Editor.ProcessAssets
                     UnityEngine.Debug.LogError(ex);
                 }
             }
-            else
+            else if (watchForChanges)
             {
                 DisposeWatcher();
                 savedFileHashes.Clear();

@@ -6,7 +6,7 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Windows
     internal static class StepInspectorAssetLoader
     {
         private const string StyleSheetPath =
-            "Packages/co.mindport.vrbuilder.core/Source/Core/Editor/UI/StepInspectorUITK/Resources/StepInspector.uss";
+            "Packages/nl.360fabriek.vrbuilder.core/Source/Core/Editor/UI/StepInspectorUITK/Resources/StepInspector.uss";
 
         // Used when the package is mounted via file: protocol or relocated under Assets/.
         private const string StyleSheetFallbackPath =

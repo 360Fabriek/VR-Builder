@@ -10,6 +10,7 @@ using VRBuilder.Core.Conditions;
 using VRBuilder.Core.IO;
 using VRBuilder.Core.Serialization;
 using VRBuilder.Core.Editor.ProcessValidation;
+using VRBuilder.Core.Editor.Settings;
 using VRBuilder.Core.Editor.UI.StepInspector.Menu;
 
 namespace VRBuilder.Core.Editor.Configuration
@@ -64,9 +65,14 @@ namespace VRBuilder.Core.Editor.Configuration
         }
 
         /// <inheritdoc />
-        public IProcessAssetStrategy ProcessAssetStrategy
+        public virtual IProcessAssetStrategy ProcessAssetStrategy
         {
-            get { return new SingleFileProcessAssetStrategy(); }
+            get
+            {
+                return BuilderProjectSettings.Load().ProcessStorage == ProcessAssetStorage.SplitChapters
+                    ? new SplitChaptersProcessAssetStrategy()
+                    : new SingleFileProcessAssetStrategy();
+            }
         }
 
         /// <inheritdoc />

@@ -26,7 +26,7 @@ namespace VRBuilder.Core.Editor
     public static class EditorUtils
     {
         private const string ignoreEditorImguiTestsDefineSymbol = "BUILDER_IGNORE_EDITOR_IMGUI_TESTS";
-        private const string corePackageName = "co.mindport.vrbuilder.core";
+        private const string corePackageName = "nl.360fabriek.vrbuilder.core";
 
         private static string coreFolder;
         private static bool isUpmPackage = true;

@@ -62,6 +62,7 @@ namespace VRBuilder.Core.Editor.UI.GraphView.Windows
             chapterViewContainer = new IMGUIContainer();
             rootVisualElement.Add(chapterViewContainer);
             chapterViewContainer.StretchToParentSize();
+            chapterViewContainer.schedule.Execute(() => chapterViewContainer.MarkDirtyRepaint()).Every(500);
             chapterViewContainer.style.width = ProcessMenuView.ExtendedMenuWidth;
             chapterViewContainer.style.backgroundColor = new StyleColor(new Color32(51, 51, 51, 192));
 

@@ -94,6 +94,11 @@ namespace VRBuilder.Core.Editor.UI.Drawers
             Rect textfieldRect = rect;
             textfieldRect.x += EditorGUIUtility.labelWidth + padding;
             textfieldRect.width -= (EditorGUIUtility.labelWidth + padding);
+            const float hiddenWidth = 75f;
+            Rect hiddenRect = textfieldRect;
+            hiddenRect.x = textfieldRect.xMax - hiddenWidth;
+            hiddenRect.width = hiddenWidth;
+            textfieldRect.width -= hiddenWidth + padding;
 
             GUIStyle textFieldStyle = new GUIStyle(EditorStyles.textField)
             {
@@ -124,6 +129,24 @@ namespace VRBuilder.Core.Editor.UI.Drawers
                     () =>
                     {
                         step.Name = oldName;
+                        return step;
+                    },
+                    changeValueCallback);
+            }
+
+            bool oldHidden = step.IsHidden;
+            bool newHidden = EditorGUI.ToggleLeft(hiddenRect,
+                new GUIContent("Hidden", "Mark this step hidden in process overviews. It still executes normally."), oldHidden);
+            if (newHidden != oldHidden)
+            {
+                ChangeValue(() =>
+                    {
+                        step.IsHidden = newHidden;
+                        return step;
+                    },
+                    () =>
+                    {
+                        step.IsHidden = oldHidden;
                         return step;
                     },
                     changeValueCallback);

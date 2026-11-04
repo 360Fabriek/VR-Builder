@@ -10,9 +10,9 @@ namespace VRBuilder.Demo.Editor
 {
     public static class DemoSceneLoader
     {
-        private const string packageName = "co.mindport.vrbuilder.core";
+        private const string packageName = "nl.360fabriek.vrbuilder.core";
         private const string samplesRoot = "Assets/Samples/VR Builder";
-        private const string packageProcessRoot = "Packages/co.mindport.vrbuilder.core/StreamingAssets~/Processes/";
+        private const string packageProcessRoot = "Packages/nl.360fabriek.vrbuilder.core/StreamingAssets~/Processes/";
         private const string packageProcessDestination = "Assets/StreamingAssets/Processes/";
 
         [MenuItem("Tools/VR Builder/Example Scenes/Core Features", false, 63)]

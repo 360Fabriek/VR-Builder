@@ -37,7 +37,7 @@ namespace VRBuilder.Core.Editor.TextToSpeech.Utils
             ITextToSpeechProvider provider = TextToSpeechProviderFactory.Instance.CreateProvider();
             ITextToSpeechConfiguration configuration = provider.LoadConfig();
             string filename = configuration.GetUniqueTextToSpeechFilename(key, text, locale, speaker);
-            string filePath = $"{RuntimeConfigurator.Configuration.GetTextToSpeechSettings().StreamingAssetCacheDirectoryName}/{filename}";
+            string filePath = $"{TextToSpeechSettings.Instance.StreamingAssetCacheDirectoryName}/{filename}";
             string basedDirectoryPath = Application.isEditor ? Application.streamingAssetsPath : Application.persistentDataPath;
             string absolutePath = Path.Combine(basedDirectoryPath, filePath);
 
@@ -88,7 +88,7 @@ namespace VRBuilder.Core.Editor.TextToSpeech.Utils
         /// </summary>
         public static async Task<int> CacheTextToSpeechClips(IEnumerable<ITextToSpeechContent> clips, Locale locale, string localizationTable)
         {
-            TextToSpeechSettings settings = RuntimeConfigurator.Configuration.GetTextToSpeechSettings();
+            TextToSpeechSettings settings = TextToSpeechSettings.Instance;
             ITextToSpeechContent[] validClips = clips.Where(clip => string.IsNullOrEmpty(clip.Text) == false).ToArray();
             for (int i = 0; i < validClips.Length; i++)
             {
@@ -133,7 +133,7 @@ namespace VRBuilder.Core.Editor.TextToSpeech.Utils
         {
             if (Provider.enabled && Provider.onlineState != OnlineState.Offline)
             {
-                string[] assetPaths = AssetDatabase.FindAssets("t:AudioClip", new[] { "Assets/StreamingAssets/" + RuntimeConfigurator.Configuration.GetTextToSpeechSettings().StreamingAssetCacheDirectoryName });
+                string[] assetPaths = AssetDatabase.FindAssets("t:AudioClip", new[] { "Assets/StreamingAssets/" + TextToSpeechSettings.Instance.StreamingAssetCacheDirectoryName });
                 if (assetPaths.Length > 0)
                 {
                     AssetList assetList = assetPaths.Aggregate(new AssetList(), (list, asset) =>

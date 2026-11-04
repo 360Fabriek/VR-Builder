@@ -20,6 +20,11 @@ namespace VRBuilder.Core.Editor.ProcessAssets
         /// </summary>
         public static string GetProcessNameFromPath(string processPath)
         {
+            if (string.IsNullOrEmpty(processPath) || processPath.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+            {
+                return string.Empty;
+            }
+
             return Path.GetFileNameWithoutExtension(processPath);
         }
 

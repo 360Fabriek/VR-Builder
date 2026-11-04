@@ -258,10 +258,10 @@ namespace VRBuilder.Core.Editor.Configuration
 
             PopulateProcessList();
 
-            if (string.IsNullOrEmpty(configurator.GetSelectedProcess()))
+            if (IsProcessListEmpty() == false && string.IsNullOrEmpty(configurator.GetSelectedProcess()))
             {
                 SetConfiguratorSelectedProcess(ProcessAssetUtils.GetProcessStreamingAssetPath(processDisplayNames[0]));
-                GlobalEditorHandler.SetCurrentProcess(ProcessAssetUtils.GetProcessAssetPath(configurator.GetSelectedProcess()));
+                GlobalEditorHandler.SetCurrentProcess(processDisplayNames[0]);
             }
         }
     }

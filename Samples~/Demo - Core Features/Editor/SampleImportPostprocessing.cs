@@ -19,7 +19,7 @@ namespace VRBuilder.Samples.HandsInteraction.Editor
         private const string sampleRootPrefix = "Assets/Samples/VR Builder";
         private const string sampleFolderName = "Demo - Core Features";
         private const string processFileName = "Demo - Core Features.json";
-        private const string packageProcessRoot = "Packages/co.mindport.vrbuilder.core/StreamingAssets~/Processes/" + sampleFolderName;
+        private const string packageProcessRoot = "Packages/nl.360fabriek.vrbuilder.core/StreamingAssets~/Processes/" + sampleFolderName;
         private const string packageProcessDestination = "Assets/StreamingAssets/Processes/" + sampleFolderName;
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace VRBuilder.Core.Editor
 {
     public static class LoadHandsInteractionSampleMenuEntry
     {
-        private const string packageName = "co.mindport.vrbuilder.core";
+        private const string packageName = "nl.360fabriek.vrbuilder.core";
         private const string sampleName = "Demo - Hands Interaction";
         private const string assetsSampleSourcePath = "Assets/MindPort/VR Builder/Core/Samples~/" + sampleName;
         private const string assetsSampleTargetDirectory = "Assets/Samples/VR Builder/0.0.0/" + sampleName;

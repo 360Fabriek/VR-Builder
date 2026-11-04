@@ -14,7 +14,16 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Tabs
             ScrollView root = new ScrollView(ScrollViewMode.Vertical);
             root.AddToClassList("vrb-step-header");
 
-            root.Add(BuildNameField(step));
+            VisualElement nameRow = new VisualElement();
+            nameRow.style.flexDirection = FlexDirection.Row;
+            nameRow.style.alignItems = Align.Center;
+            TextField nameField = BuildNameField(step);
+            nameField.style.flexGrow = 1;
+            nameField.style.flexShrink = 1;
+            nameField.style.minWidth = 0;
+            nameRow.Add(nameField);
+            nameRow.Add(BuildHiddenField(step));
+            root.Add(nameRow);
             root.Add(BuildDescriptionField(step));
 
             return root;
@@ -51,6 +60,27 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Tabs
                 capturedOld = newValue;
             });
 
+            return field;
+        }
+
+        private static Toggle BuildHiddenField(IStepData step)
+        {
+            Toggle field = new Toggle("Hidden")
+            {
+                name = "step-is-hidden",
+                value = step.IsHidden,
+                tooltip = "Mark this step hidden in process overviews. It still executes normally."
+            };
+            field.RegisterValueChangedCallback(evt =>
+            {
+                bool oldValue = step.IsHidden;
+                bool newValue = evt.newValue;
+                if (newValue == oldValue) return;
+
+                TabMutations.Do(
+                    () => step.IsHidden = newValue,
+                    () => step.IsHidden = oldValue);
+            });
             return field;
         }
 

@@ -16,7 +16,7 @@ namespace VRBuilder.Core.Editor.UI.StepInspectorUITK.Drawers
         {
             if (value == null)
             {
-                throw new NullReferenceException("Attempting to draw null IDataOwner.");
+                return new Label("(none)") { tooltip = label?.tooltip };
             }
 
             IData data = ((IDataOwner)value).Data;
